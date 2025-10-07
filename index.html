@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interaktif: Sejarah Indonesia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #c62828, #1565c0);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+        }
+
+        .quiz-header {
+            background: linear-gradient(to right, #c62828, #d32f2f);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .quiz-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .quiz-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .user-form {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+        }
+
+        .user-form h3 {
+            margin-bottom: 15px;
+            color: #c62828;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .quiz-body {
+            padding: 30px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #c62828, #d32f2f);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            font-size: 1.2rem;
+            color: #c62828;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option {
+            background-color: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .option:hover {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .option.selected {
+            background-color: #bbdefb;
+            border-color: #2196f3;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-prev {
+            background-color: #e0e0e0;
+            color: #424242;
+        }
+
+        .btn-next {
+            background: linear-gradient(to right, #c62828, #d32f2f);
+            color: white;
+        }
+
+        .btn-submit {
+            background: linear-gradient(to right, #2e7d32, #4caf50);
+            color: white;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            color: #c62828;
+            margin-bottom: 20px;
+        }
+
+        .score {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #1565c0;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn-restart {
+            background: linear-gradient(to right, #c62828, #d32f2f);
+            color: white;
+            margin-top: 20px;
+        }
+
+        .admin-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+        }
+
+        .admin-panel h3 {
+            color: #c62828;
+            margin-bottom: 15px;
+        }
+
+        .participants-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .participant-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .participant-info {
+            flex: 1;
+        }
+
+        .participant-score {
+            font-weight: bold;
+            margin-left: 20px;
+        }
+
+        .score-high { color: #4caf50; }
+        .score-medium { color: #ff9800; }
+        .score-low { color: #f44336; }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-admin {
+            background: linear-gradient(to right, #1565c0, #1976d2);
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+
+        .flag-decoration {
+            position: absolute;
+            width: 100px;
+            height: 70px;
+            background: linear-gradient(to bottom, #c62828 50%, white 50%);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .flag-1 { top: 10%; left: 5%; transform: rotate(-15deg); }
+        .flag-2 { top: 15%; right: 5%; transform: rotate(15deg); }
+        .flag-3 { bottom: 10%; left: 8%; transform: rotate(10deg); }
+        .flag-4 { bottom: 15%; right: 7%; transform: rotate(-10deg); }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #c62828, #d32f2f);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .quiz-header h1 { font-size: 2rem; }
+            .question-text { font-size: 1.3rem; }
+            .flag-decoration { display: none; }
+            .participant-item { flex-direction: column; align-items: flex-start; }
+            .participant-score { margin-left: 0; margin-top: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flag-decoration flag-1"></div>
+    <div class="flag-decoration flag-2"></div>
+    <div class="flag-decoration flag-3"></div>
+    <div class="flag-decoration flag-4"></div>
+
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>Quiz Sejarah Indonesia</h1>
+            <p>Uji pengetahuan Anda tentang sejarah Indonesia!</p>
+        </div>
+        
+        <div class="user-form" id="user-form">
+            <h3>Data Diri Peserta</h3>
+            <div class="form-group">
+                <label for="user-name">Nama Lengkap:</label>
+                <input type="text" id="user-name" placeholder="Masukkan nama lengkap Anda">
+            </div>
+            <div class="form-group">
+                <label for="user-email">Email:</label>
+                <input type="email" id="user-email" placeholder="Masukkan alamat email">
+            </div>
+            <div class="form-group">
+                <label for="user-class">Kelas/Instansi:</label>
+                <input type="text" id="user-class" placeholder="Contoh: Kelas 10A / Karyawan PT XYZ">
+            </div>
+            <button class="btn btn-next" id="start-quiz">Mulai Quiz</button>
+        </div>
+        
+        <div class="quiz-body" id="quiz-body" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            
+            <div class="question-container" id="question-container">
+                <div class="question-number" id="question-number">Pertanyaan 1 dari 3</div>
+                <div class="question-text" id="question-text">Siapa nama presiden kita saat ini?</div>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Opsi akan diisi oleh JavaScript -->
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn btn-prev" id="prev-btn">Sebelumnya</button>
+                    <button class="btn btn-next" id="next-btn">Selanjutnya</button>
+                    <button class="btn btn-submit" id="submit-btn" style="display: none;">Lihat Hasil</button>
+                </div>
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <h2 class="result-title">Hasil Quiz Anda</h2>
+                <div class="score" id="score">0/3</div>
+                <p class="result-message" id="result-message"></p>
+                <button class="btn btn-restart" id="restart-btn">Ulangi Quiz</button>
+                
+                <div class="admin-panel" id="admin-panel">
+                    <h3>Panel Admin - Statistik & Peserta</h3>
+                    
+                    <div class="stats-container" id="stats-container">
+                        <!-- Statistik akan diisi oleh JavaScript -->
+                    </div>
+                    
+                    <div class="participants-list" id="participants-list">
+                        <!-- Daftar peserta akan diisi oleh JavaScript -->
+                    </div>
+                    
+                    <div class="admin-actions">
+                        <button class="btn btn-admin" id="export-btn">Export Data</button>
+                        <button class="btn btn-admin" id="refresh-btn">Refresh Data</button>
+                        <button class="btn btn-admin" id="clear-btn">Hapus Semua Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data pertanyaan dan jawaban
+        const quizData = [
+            {
+                question: "Siapa nama presiden kita saat ini?",
+                options: ["Joko Widodo", "Susilo Bambang Yudhoyono", "Megawati Soekarnoputri", "Prabowo Subianto"],
+                correctAnswer: 3
+            },
+            {
+                question: "Siapa yang menjahit bendera merah putih?",
+                options: ["Cut Nyak Dien", "Fatmawati", "Kartini", "Martha Christina Tiahahu"],
+                correctAnswer: 1
+            },
+            {
+                question: "Siapa yang menciptakan lagu Indonesia Raya?",
+                options: ["W.R. Supratman", "C. Simanjuntak", "Ismail Marzuki", "Gesang"],
+                correctAnswer: 0
+            }
+        ];
+
+        // Variabel state
+        let currentQuestion = 0;
+        let userAnswers = Array(quizData.length).fill(null);
+        let score = 0;
+        let userData = {};
+
+        // Elemen DOM
+        const elements = {
+            userForm: document.getElementById('user-form'),
+            quizBody: document.getElementById('quiz-body'),
+            questionNumber: document.getElementById('question-number'),
+            questionText: document.getElementById('question-text'),
+            optionsContainer: document.getElementById('options-container'),
+            progress: document.getElementById('progress'),
+            prevBtn: document.getElementById('prev-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            submitBtn: document.getElementById('submit-btn'),
+            resultContainer: document.getElementById('result-container'),
+            score: document.getElementById('score'),
+            resultMessage: document.getElementById('result-message'),
+            restartBtn: document.getElementById('restart-btn'),
+            startQuizBtn: document.getElementById('start-quiz'),
+            participantsList: document.getElementById('participants-list'),
+            statsContainer: document.getElementById('stats-container'),
+            exportBtn: document.getElementById('export-btn'),
+            refreshBtn: document.getElementById('refresh-btn'),
+            clearBtn: document.getElementById('clear-btn')
+        };
+
+        // Database simulation menggunakan localStorage
+        const DB = {
+            init: function() {
+                if (!localStorage.getItem('quizParticipants')) {
+                    localStorage.setItem('quizParticipants', JSON.stringify([]));
+                }
+            },
+
+            addParticipant: function(participantData) {
+                const participants = this.getParticipants();
+                participants.push({
+                    ...participantData,
+                    id: Date.now(),
+                    completed_at: new Date().toISOString()
+                });
+                localStorage.setItem('quizParticipants', JSON.stringify(participants));
+                return true;
+            },
+
+            getParticipants: function() {
+                return JSON.parse(localStorage.getItem('quizParticipants') || '[]');
+            },
+
+            getStatistics: function() {
+                const participants = this.getParticipants();
+                const total = participants.length;
+                const avgScore = total > 0 ? 
+                    (participants.reduce((acc, p) => acc + p.score, 0) / total).toFixed(1) : 0;
+                const perfectScores = participants.filter(p => p.score === 3).length;
+
+                return {
+                    total_participants: total,
+                    average_score: parseFloat(avgScore),
+                    perfect_scores: perfectScores
+                };
+            },
+
+            clearAll: function() {
+                localStorage.setItem('quizParticipants', JSON.stringify([]));
+                return true;
+            },
+
+            exportToCSV: function() {
+                const participants = this.getParticipants();
+                let csv = 'Nama,Email,Kelas/Instansi,Skor,Total Pertanyaan,Waktu Selesai\n';
+                
+                participants.forEach(p => {
+                    csv += `"${p.name}","${p.email}","${p.class}",${p.score},${p.total_questions},"${p.completed_at}"\n`;
+                });
+
+                return csv;
+            }
+        };
+
+        // Inisialisasi database
+        DB.init();
+
+        // Fungsi untuk memulai quiz
+        function startQuiz() {
+            const userName = document.getElementById('user-name').value;
+            const userEmail = document.getElementById('user-email').value;
+            const userClass = document.getElementById('user-class').value;
+            
+            if (!userName || !userEmail || !userClass) {
+                alert('Harap lengkapi semua data diri!');
+                return;
+            }
+            
+            userData = { 
+                name: userName, 
+                email: userEmail, 
+                class: userClass,
+                total_questions: quizData.length
+            };
+            elements.userForm.style.display = 'none';
+            elements.quizBody.style.display = 'block';
+            showQuestion();
+        }
+
+        // Fungsi untuk menampilkan pertanyaan
+        function showQuestion() {
+            const question = quizData[currentQuestion];
+            
+            elements.questionNumber.textContent = `Pertanyaan ${currentQuestion + 1} dari ${quizData.length}`;
+            elements.questionText.textContent = question.question;
+            elements.progress.style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+            
+            elements.optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.classList.add('option');
+                if (userAnswers[currentQuestion] === index) optionEl.classList.add('selected');
+                optionEl.textContent = option;
+                optionEl.addEventListener('click', () => selectOption(index));
+                elements.optionsContainer.appendChild(optionEl);
+            });
+            
+            elements.prevBtn.style.display = currentQuestion === 0 ? 'none' : 'block';
+            if (currentQuestion === quizData.length - 1) {
+                elements.nextBtn.style.display = 'none';
+                elements.submitBtn.style.display = 'block';
+            } else {
+                elements.nextBtn.style.display = 'block';
+                elements.submitBtn.style.display = 'none';
+            }
+        }
+
+        // Fungsi untuk memilih opsi
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            showQuestion();
+        }
+
+        // Fungsi navigasi
+        function prevQuestion() { 
+            if (currentQuestion > 0) { 
+                currentQuestion--; 
+                showQuestion(); 
+            } 
+        }
+
+        function nextQuestion() { 
+            if (currentQuestion < quizData.length - 1) { 
+                currentQuestion++; 
+                showQuestion(); 
+            } 
+        }
+
+        // Fungsi untuk menghitung skor dan menampilkan hasil
+        function showResults() {
+            score = userAnswers.reduce((acc, answer, index) => 
+                acc + (answer === quizData[index].correctAnswer ? 1 : 0), 0);
+            
+            elements.score.textContent = `${score}/${quizData.length}`;
+            elements.resultMessage.textContent = getResultMessage(score);
+            
+            document.getElementById('question-container').style.display = 'none';
+            elements.resultContainer.style.display = 'block';
+            
+            // Simpan data ke database
+            saveToDatabase();
+            loadStatistics();
+            loadParticipants();
+        }
+
+        // Fungsi untuk mendapatkan pesan hasil
+        function getResultMessage(score) {
+            if (score === quizData.length) return "Luar biasa! Anda benar-benar menguasai sejarah Indonesia!";
+            if (score >= 2) return "Bagus! Pengetahuan sejarah Indonesia Anda cukup baik.";
+            return "Jangan menyerah! Terus pelajari sejarah Indonesia yang kaya ini.";
+        }
+
+        // Fungsi untuk menyimpan data ke database
+        function saveToDatabase() {
+            const participantData = {
+                ...userData,
+                 answers: [...userAnswers],
+                score: score
+            };
+
+            DB.addParticipant(participantData);
+            console.log('Data berhasil disimpan ke database');
+        }
+
+        // Fungsi untuk memuat statistik
+        function loadStatistics() {
+            const stats = DB.getStatistics();
+            displayStatistics(stats);
+        }
+
+        // Fungsi untuk menampilkan statistik
+        function displayStatistics(stats) {
+            elements.statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_participants}</div>
+                    <div>Total Peserta</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.average_score}</div>
+                    <div>Rata-rata Skor</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.perfect_scores}</div>
+                    <div>Skor Sempurna</div>
+                </div>
+            `;
+        }
+
+        // Fungsi untuk memuat daftar peserta
+        function loadParticipants() {
+            const participants = DB.getParticipants();
+            displayParticipants(participants);
+        }
+
+        // Fungsi untuk menampilkan daftar peserta
+        function displayParticipants(participants) {
+            elements.participantsList.innerHTML = participants.length ? 
+                participants.slice().reverse().map(p => `
+                    <div class="participant-item">
+                        <div class="participant-info">
+                            <strong>${p.name}</strong><br>
+                            <small>${p.email} - ${p.class}</small>
+                        </div>
+                        <div class="participant-score ${getScoreClass(p.score)}">
+                            Skor: ${p.score}/3
+                        </div>
+                    </div>
+                `).join('') : '<p>Belum ada peserta yang menyelesaikan quiz.</p>';
+        }
+
+        // Fungsi untuk mendapatkan kelas skor
+        function getScoreClass(score) {
+            if (score === 3) return 'score-high';
+            if (score >= 2) return 'score-medium';
+            return 'score-low';
+        }
+
+        // Fungsi untuk export data
+        function exportData() {
+            const csv = DB.exportToCSV();
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `data_peserta_quiz_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Fungsi untuk menghapus semua data
+        function clearData() {
+            if (!confirm('Apakah Anda yakin ingin menghapus semua data peserta?')) return;
+            
+            DB.clearAll();
+            loadStatistics();
+            loadParticipants();
+            alert('Data berhasil dihapus');
+        }
+
+        // Event Listeners
+        elements.startQuizBtn.addEventListener('click', startQuiz);
+        elements.prevBtn.addEventListener('click', prevQuestion);
+        elements.nextBtn.addEventListener('click', nextQuestion);
+        elements.submitBtn.addEventListener('click', showResults);
+        elements.restartBtn.addEventListener('click', () => {
+            currentQuestion = 0;
+            userAnswers = Array(quizData.length).fill(null);
+            score = 0;
+            document.getElementById('question-container').style.display = 'block';
+            elements.resultContainer.style.display = 'none';
+            showQuestion();
+        });
+        elements.exportBtn.addEventListener('click', exportData);
+        elements.refreshBtn.addEventListener('click', () => {
+            loadStatistics();
+            loadParticipants();
+        });
+        elements.clearBtn.addEventListener('click', clearData);
+
+        // Muat data saat halaman dimuat
+        window.addEventListener('load', () => {
+            loadStatistics();
+            loadParticipants();
+        });
+    </script>
+</body>
+</html>
